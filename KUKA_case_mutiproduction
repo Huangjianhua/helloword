@@ -1,0 +1,46 @@
+print ("Creat SRC and DAT of KUKA ROBOT MUTI PRODUCT FILE")
+n=20
+m=100
+tit="Teach_Point"
+peifang="PNT"
+f = open("c:/tmp/"+tit+".DAT", "w")
+f.write("DEFDAT "+tit+" PUBLIC\n")
+f.write("DECL GLOBAL E6POS "+ peifang+"["+str(m)+","+str(n)+"]\n")
+f.write("ENDDAT")
+f.close()
+
+f = open("c:/tmp/"+tit+".SRC", "w")
+counter = 1
+counter2 = 1
+f.write("DEF "+tit+"()\nBAS(#TOOL,1)\nBAS(#BASE,0)\n")
+while counter2 <= m:
+      if counter == 1:
+        f.write(";Fold Teachpoint["+str(counter2)+"]\n")
+      f.write("wait for false\n"+peifang+"["+str(counter2)+","+str(counter)+"]=$pos_act\n")
+      f.write("sptp "+peifang+"["+str(counter2)+","+str(counter)+"]\n")
+      if counter==n:
+       counter2 += 1
+       counter = 0
+       f.write(";ENDFOLD\n")
+      counter += 1
+f.write("END")
+f.close()
+
+tit="ProductSelection"
+f = open("c:/tmp/"+tit+".SRC", "w")
+counter = 1
+counter2 = 1
+f.write("DEF "+tit+"()\nBAS(#TOOL,1)\nBAS(#BASE,0)\n")
+f.write("SWITCH PRODUCT_TYPE\n")
+while counter2 <= m:
+      if counter == 1:
+        f.write("CASE " + str(counter2) + "\n")
+        f.write(";Fold PRODUCT_CASE["+str(counter2)+"]\n")
+      f.write("WorkPoint"+str(counter)+"="+peifang+"["+str(counter2)+","+str(counter)+"]\n")
+      if counter==n:
+       counter2 += 1
+       counter = 0
+       f.write(";ENDFOLD\n")
+      counter += 1
+f.write("DEFAULT\nENDSWITCH\nEND")
+f.close()
